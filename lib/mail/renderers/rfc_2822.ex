@@ -86,6 +86,17 @@ defmodule Mail.Renderers.RFC2822 do
   def render_header(key, value) when is_atom(key),
     do: render_header(Atom.to_string(key), value)
 
+  def render_header("subject" = key, value) do
+    key =
+      key
+      |> String.replace("_", "-")
+      |> String.split("-")
+      |> Enum.map(&String.capitalize(&1))
+      |> Enum.join("-")
+
+    key <> ": " <> String.replace(render_header_value(key, value), "\r\n", "")
+  end
+
   def render_header(key, value) do
     key =
       key
